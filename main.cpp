@@ -1,5 +1,8 @@
 #include "common.hpp"
 
+#include "atcoder12live.hpp"
+#include "greedy_solver.hpp"
+
 using namespace std;
 using lint = long long;
 using pint = std::pair<int, int>;
@@ -12,14 +15,21 @@ struct fast_ios {
 } fast_ios_;
 
 int main(int argc, char *argv[]) {
-    int X = 0;
-    if (argc >= 2) { X = std::stoi(argv[1]); }
+    // if (argc >= 2) { X = std::stoi(argv[1]); }
 
-    int x;
-    std::cin >> x;
-    jdump("stdin", x);
+    Instance ins;
+    {
+        int n, t;
+        cin >> n >> t;
+        assert(n == N);
+        assert(t == T);
+        for (auto &v : ins._d) cin >> v;
+    }
 
-    dump_onlinejudge("solution");
+    auto ans = greedy_solve(ins);
 
-    jdump("score", -(X - 6) * (X - 6));
+    dump_onlinejudge(encode_solution(ans));
+
+    dbg(evaluate(ins, ans));
+    jdump("score", evaluate(ins, ans));
 }
