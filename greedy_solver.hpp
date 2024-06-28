@@ -16,8 +16,8 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
         for (int v : state) diff_l1 += std::abs(v - last), last = v;
     }
 
-    constexpr int UB = 4;
-    constexpr int W = 8;
+    constexpr int UB = 1;
+    constexpr int W = 1;
     constexpr int D = 1 << (UB - 1);
 
     for (int dv = -5; dv <= 5; ++dv) {
@@ -48,11 +48,11 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
             const int right_dy = std::abs(state.at(i) + dv - (i + 1 < N ? state.at(i + 1) : 0)) -
                                  std::abs(state.at(i) - (i + 1 < N ? state.at(i + 1) : 0));
 
-            if (chmax(max_cs, cs - left_dy * W)) arg_maxcs = i;
+            if (i % 2 == 0) if (chmax(max_cs, cs - left_dy * W)) arg_maxcs = i;
             cs += diffs.at(i);
 
             int e = cs + (right_dy + diff_l1) * W - max_cs;
-            best_ops.emplace_back(e, Op{arg_maxcs, i + 1, dv});
+            if ((i + 1) % 2 == 0) best_ops.emplace_back(e, Op{arg_maxcs, i + 1, dv});
         }
     }
 

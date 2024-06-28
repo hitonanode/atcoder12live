@@ -65,9 +65,9 @@ Solution beamsearch(const Instance &ins) {
         std::vector<std::tuple<int, int, Op>> nxt_bests; // score, idx, op
         for (auto [idx, score] : bests) {
             const auto &state = states.at(idx);
-            auto ops = find_best_ops(state.val, ins, t, 4);
+            auto ops = find_best_ops(state.val, ins, t, 10);
             for (auto [e, op] : ops) {
-                int ee = e + state.cost * 8;
+                int ee = e + state.cost;
                 nxt_bests.emplace_back(ee, idx, op);
             }
         }
