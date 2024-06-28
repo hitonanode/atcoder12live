@@ -1,6 +1,7 @@
 #include "common.hpp"
 
 #include "atcoder12live.hpp"
+#include "beamsearch.hpp"
 #include "greedy_solver.hpp"
 
 using namespace std;
@@ -26,7 +27,7 @@ int main(int argc, char *argv[]) {
         for (auto &v : ins._d) cin >> v;
     }
 
-    auto ans = greedy_solve(ins);
+    auto ans = beamsearch(ins);
 
     dump_onlinejudge(encode_solution(ans));
 
