@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
 
     dump_onlinejudge(encode_solution(ans));
 
+    dbg(get_max_abs_dv(ans));
     dbg(evaluate(ins, ans));
+
+    jdump("maxdv", get_max_abs_dv(ans));
     jdump("score", evaluate(ins, ans));
 }

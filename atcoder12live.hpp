@@ -36,9 +36,17 @@ struct Instance {
         assert(0 <= x and x < N);
         return _d.at(t * N + x);
     }
+
+    std::array<int, N> vals(int t) const {
+        assert(0 <= t and t < T);
+        std::array<int, N> ret;
+        for (int i = 0; i < N; ++i) ret.at(i) = val(t, i);
+        return ret;
+    }
 };
 
-using Solution = std::vector<std::tuple<int, int, int>>; // l, r, dv
+using Op = std::tuple<int, int, int>;
+using Solution = std::vector<Op>; // l, r, dv
 
 std::string encode_solution(const Solution &sol) {
     std::string ret;
@@ -64,6 +72,14 @@ int evaluate(const Instance &ins, const Solution &sol) {
     }
 
     return std::max(ins.S0() - S + 1, 0);
+}
+
+int get_max_abs_dv(const Solution &sol) {
+    int ret = 0;
+    for (const auto &[l, r, dv] : sol) {
+        ret = std::max(ret, std::abs(dv));
+    }
+    return ret;
 }
 
 #endif
