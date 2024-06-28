@@ -10,6 +10,16 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
 
     static std::array<int, N> diffs;
 
+    int diff_l1 = 0;
+    {
+        int last = 0;
+        for (int v : state) diff_l1 += std::abs(v - last), last = v;
+    }
+
+    constexpr int UB = 4;
+    constexpr int W = 8;
+    constexpr int D = 1 << (UB - 1);
+
     for (int dv = -5; dv <= 5; ++dv) {
         if (dv == 0) continue;
 
@@ -17,12 +27,11 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
             int e = 0;
             const int c = state.at(i) + dv;
 
-            constexpr int UB = 4;
             for (int turn = 0; turn < UB; ++turn) {
                 if (current_turn + turn >= T) break;
                 const int u = std::abs(ins.val(current_turn + turn, i) - c) -
                               std::abs(ins.val(current_turn + turn, i) - state.at(i));
-                e += u * (1 << (UB - turn - 1));
+                e += u * (D >> turn);
             }
 
             diffs.at(i) = e;
@@ -31,13 +40,19 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
         int cs = 0;
         int max_cs = 0;
         int arg_maxcs = 0;
+
         for (int i = 0; i < N; ++i) {
+            const int left_dy = std::abs(state.at(i) + dv - (i ? state.at(i - 1) : 0)) -
+                                std::abs(state.at(i) - (i ? state.at(i - 1) : 0));
+
+            const int right_dy = std::abs(state.at(i) + dv - (i + 1 < N ? state.at(i + 1) : 0)) -
+                                 std::abs(state.at(i) - (i + 1 < N ? state.at(i + 1) : 0));
+
+            if (chmax(max_cs, cs - left_dy * W)) arg_maxcs = i;
             cs += diffs.at(i);
-            if (chmax(max_cs, cs)) arg_maxcs = i + 1;
 
-            int eval = cs - max_cs;
-
-            if (eval < 0) { best_ops.emplace_back(eval, Op{arg_maxcs, i + 1, dv}); }
+            int e = cs + (right_dy + diff_l1) * W - max_cs;
+            best_ops.emplace_back(e, Op{arg_maxcs, i + 1, dv});
         }
     }
 
