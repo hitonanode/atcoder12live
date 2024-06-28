@@ -42,6 +42,7 @@ find_best_ops(const std::array<int, N> &state, const Instance &ins, int current_
     }
 
     std::partial_sort(best_ops.begin(), best_ops.begin() + std::min<int>(sz, best_ops.size()), best_ops.end());
+    best_ops.resize(std::min<int>(sz, best_ops.size()));
 
     return best_ops;
 }
