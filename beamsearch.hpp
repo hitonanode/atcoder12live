@@ -7,6 +7,8 @@
 #include "atcoder12live.hpp"
 #include "greedy_solver.hpp"
 
+#include "number/modint_mersenne61.hpp"
+
 struct State {
     std::array<int, N> val;
     int turn = 0;
@@ -37,6 +39,13 @@ struct State {
 
         return nxt;
     }
+
+    unsigned long long hash() const {
+        ModIntMersenne61 hash(0);
+        static ModIntMersenne61 base(1000000007);
+        for (int v : val) { hash = hash * base + ModIntMersenne61(v); }
+        return hash.val();
+    }
 };
 
 Solution beamsearch(const Instance &ins) {
@@ -56,23 +65,25 @@ Solution beamsearch(const Instance &ins) {
         std::vector<std::tuple<int, int, Op>> nxt_bests; // score, idx, op
         for (auto [idx, score] : bests) {
             const auto &state = states.at(idx);
-            auto ops = find_best_ops(state.val, ins, t, 20);
+            auto ops = find_best_ops(state.val, ins, t, 4);
             for (auto [e, op] : ops) {
                 int ee = e + state.cost * 8;
                 nxt_bests.emplace_back(ee, idx, op);
             }
         }
-        std::partial_sort(
-            nxt_bests.begin(), nxt_bests.begin() + std::min<int>(BEAM_WIDTH, nxt_bests.size()), nxt_bests.end());
-
-        if (nxt_bests.size() > BEAM_WIDTH) nxt_bests.resize(BEAM_WIDTH);
+        std::sort(nxt_bests.begin(), nxt_bests.end());
 
         bests.clear();
-        for (auto [tmp_score, idx, op] : nxt_bests) {
 
-            const int nxt_id = states.size();
-            states.push_back(states.at(idx).apply(op, ins, idx));
-            bests.emplace_back(nxt_id, states.back().cost);
+        std::unordered_set<unsigned long long> used;
+        for (auto [tmp_score, idx, op] : nxt_bests) {
+            if ((int)bests.size() >= BEAM_WIDTH) continue;
+            auto nxt = states.at(idx).apply(op, ins, idx);
+            auto hash = nxt.hash();
+            if (used.count(hash)) continue;
+            used.insert(hash);
+            states.push_back(nxt);
+            bests.emplace_back(states.size() - 1, tmp_score);
         }
     }
 
