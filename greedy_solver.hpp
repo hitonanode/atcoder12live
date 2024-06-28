@@ -37,9 +37,8 @@ Solution greedy_solve(const Instance &ins) {
             int arg_maxcs = 0;
             for (int i = 0; i < N; ++i) {
                 cs += diffs.at(i);
-                if (chmax(max_cs, cs)) {
-                    arg_maxcs = i + 1;
-                }
+                if (chmax(max_cs, cs)) arg_maxcs = i + 1;
+
                 if (chmin(best_eval, cs - max_cs)) {
                     best_l = arg_maxcs;
                     best_r = i + 1;
