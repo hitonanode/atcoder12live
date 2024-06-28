@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         for (auto &v : ins._d) cin >> v;
     }
 
-    auto ans = beamsearch(ins);
+    auto ans = greedy_solve(ins);
 
     dump_onlinejudge(encode_solution(ans));
 
