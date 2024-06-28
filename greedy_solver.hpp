@@ -14,11 +14,23 @@ Solution greedy_solve(const Instance &ins) {
 
         for (int l = 0; l < N; ++l) {
             for (int r = l + 1; r <= N; ++r) {
-                for (int dv = -10; dv <= 10; ++dv) {
+                for (int dv = -5; dv <= 5; ++dv) {
+                    if (dv == 0) continue;
+
                     int e = 0;
                     for (int i = 0; i < N; ++i) {
-                        e += std::abs(ins.val(t, i) - (state.at(i) + (i >= l and i < r ? dv : 0)));
+                        e += std::abs(ins.val(t, i) - (state.at(i) + (i >= l and i < r ? dv : 0))) * 8;
+                        if (t + 1 < T) {
+                            e += std::abs(ins.val(t + 1, i) - (state.at(i) + (i >= l and i < r ? dv : 0))) * 4;
+                        }
+                        if (t + 2 < T) {
+                            e += std::abs(ins.val(t + 2, i) - (state.at(i) + (i >= l and i < r ? dv : 0))) * 2;
+                        }
+                        if (t + 3 < T) {
+                            e += std::abs(ins.val(t + 3, i) - (state.at(i) + (i >= l and i < r ? dv : 0)));
+                        }
                     }
+
                     if (chmin(best_eval, e)) {
                         best_l = l;
                         best_r = r;
